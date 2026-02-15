@@ -1,0 +1,4 @@
+- name: RAID Check
+  shell: "{{ 'hpcaculi' if raid_ctrl == 'hp' else 'perccli' }}"
+  register: result_disk_2
+  when: srv_type == "physical"

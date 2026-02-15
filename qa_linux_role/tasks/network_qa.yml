@@ -1,0 +1,28 @@
+# ---------------------------------------------------
+# Network Configuration QA
+# ---------------------------------------------------
+
+- name: Verify Network configuration
+  debug:
+    msg:
+      - "IPv4 address: {{ ansible_default_ipv4.address }}"
+      - "Subnet mask: {{ ansible_default_ipv4.netmask }}"
+      - "Default Gateway: {{ ansible_default_ipv4.gateway }}"
+
+- pause:
+    prompt: "Is the above displayed Network configuration correct (please verify from build sheet)? [yes/no]"
+    echo: yes
+  register: prompt_nw_details
+
+- set_fact:
+    nw_verification: "{{ prompt_nw_details.user_input }}"
+
+- name: Network configuration QA Passed
+  debug:
+    msg: " PASS "
+  when: nw_verification | bool
+
+- name: Network configuration QA Failed
+  debug:
+    msg: " Network QA failed "
+  when: not (nw_verification | bool)

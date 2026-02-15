@@ -1,0 +1,28 @@
+- name: Collect QA inputs
+  vars:
+    questions:
+      - { var: ticket_num, prompt: "Provide the Ticket Number" }
+      - { var: build_by, prompt: "Build by" }
+      - { var: qa_by, prompt: "QA by" }
+      - { var: srv_type, prompt: "Server Type [virtual/physical]" }
+      - { var: client_name, prompt: "Client name:" }
+      - { var: mon_agt, prompt: "Monitoring Agent [nqm/patrol]:" }
+  loop: "{{ questions }}"
+  pause:
+    prompt: "{{ item.prompt }}"
+    echo: yes
+  register: prompt_results
+
+- set_fact:
+    "{{ item.item.var }}": "{{ item.user_input }}"
+  loop: "{{ prompt_results.results }}"
+
+- pause:
+    prompt: "RAID controller [hp/dell]:"
+    echo: yes
+  register: prompt_raid
+  when: srv_type == "physical"
+
+- set_fact:
+    raid_ctrl: "{{ prompt_raid.user_input }}"
+  when: srv_type == "physical"

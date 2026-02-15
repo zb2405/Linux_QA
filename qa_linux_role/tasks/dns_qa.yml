@@ -1,0 +1,72 @@
+# ---------------------------------------------------
+# DNS / AD QA
+# ---------------------------------------------------
+
+- name: Check if CentrifyDC is installed
+  yum:
+    list: CentrifyDC
+  register: yum_cmd
+
+- name: Define variable if Centrify Agent not installed
+  set_fact:
+    ad_info: "Centrify Agent Not Installed"
+  when: yum_cmd is failed
+
+# AD info only if installed
+- name: Verify AD connectivity
+  shell: adinfo
+  register: result_dns_1
+  when: yum_cmd.results | selectattr("yumstate","match","installed") | list | length == 1
+
+- name: Set AD info output
+  set_fact:
+    ad_info: "{{ result_dns_1.stdout }}"
+  when: result_dns_1 is defined
+
+- name: Show AD info
+  debug:
+    msg: "{{ ad_info }}"
+
+# resolv.conf
+- name: Verify resolv.conf
+  shell: cat /etc/resolv.conf
+  register: result_dns_2
+
+- debug:
+    msg: "{{ result_dns_2.stdout }}"
+
+# Domain lookup
+- pause:
+    prompt: "Please enter a domain to check"
+    echo: yes
+  register: prompt_dns_domain_details
+
+- set_fact:
+    dns_domain: "{{ prompt_dns_domain_details.user_input }}"
+
+- name: NSlookup
+  shell: nslookup '{{ dns_domain }}'
+  ignore_errors: yes
+  register: lookup_out
+
+- debug:
+    msg: "{{ lookup_out.stdout }}"
+
+# Verification prompt
+- pause:
+    prompt: "Are the DNS and AD details accurate for '{{ client_name }}' ? [yes/no]"
+    echo: yes
+  register: prompt_dns_details
+
+- set_fact:
+    dns_verification: "{{ prompt_dns_details.user_input }}"
+
+- name: DNS QA Passed
+  debug:
+    msg: " PASS "
+  when: dns_verification | bool
+
+- name: DNS QA Failed
+  debug:
+    msg: " DNS QA failed "
+  when: not (dns_verification | bool)

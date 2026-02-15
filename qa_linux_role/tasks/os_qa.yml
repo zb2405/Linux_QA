@@ -1,0 +1,14 @@
+- name: Show OS details
+  debug:
+    msg:
+      - "Hostname: {{ ansible_hostname }}"
+      - "Operating System: {{ ansible_distribution }}"
+      - "OS Version: {{ ansible_distribution_version }}"
+      - "Kernel Version: {{ ansible_kernel }}"
+      - "Server Type: {{ srv_type }}"
+- name: Show hardware details
+  debug:
+    msg:
+      - "Model: {{ ansible_product_name }}"
+      - "Serial: {{ ansible_product_serial }}"
+  when: srv_type == "physical"

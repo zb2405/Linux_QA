@@ -1,0 +1,5 @@
+- name: Processor details
+  debug:
+    msg:
+      - "vCPU: {{ ansible_processor_vcpus }}"
+      - "RAM: {{ ansible_memory_mb.real.total }}"

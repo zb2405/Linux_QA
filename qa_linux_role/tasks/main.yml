@@ -1,0 +1,9 @@
+- include_tasks: prompts.yml
+- include_tasks: os_qa.yml
+- include_tasks: processor_qa.yml
+- include_tasks: network_qa.yml
+- include_tasks: storage_qa.yml
+- include_tasks: dns_qa.yml
+- include_tasks: registration_qa.yml
+- include_tasks: services_qa.yml
+- include_tasks: report.yml

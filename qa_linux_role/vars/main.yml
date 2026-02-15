@@ -1,0 +1,13 @@
+---
+# Default variables for QA Linux Role
+
+monitoring_services:
+  nqm: nqmdaemon
+  patrol: patrolagent
+
+backup_service: netbackup
+vmtools_service: vmtoolsd.service
+kdump_service: kdump
+
+excel_template: "Virtual_QA.xlsx"
+excel_output: "test.xlsx"

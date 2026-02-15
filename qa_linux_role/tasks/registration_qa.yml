@@ -1,0 +1,54 @@
+# ---------------------------------------------------
+# OS Registration QA
+# ---------------------------------------------------
+
+- name: Verify OS registration (RHEL only)
+  shell: subscription-manager list
+  register: result_osr
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+
+- name: Set OS registration output
+  set_fact:
+    osr_out: "{{ result_osr.stdout }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+
+- name: Show OS registration details
+  debug:
+    msg: "{{ osr_out }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+
+# Prompt only for RHEL
+- pause:
+    prompt: "Is the OS registration details accurate for '{{ client_name }}' ? [yes/no]"
+    echo: yes
+  register: prompt_osr_details
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+
+- set_fact:
+    osr_verification: "{{ prompt_osr_details.user_input }}"
+  when: ansible_distribution == "Red Hat Enterprise Linux"
+
+- name: OS Registration QA Passed
+  debug:
+    msg: " PASS "
+  when:
+    - ansible_distribution == "Red Hat Enterprise Linux"
+    - osr_verification | bool
+
+- name: OS Registration QA Failed
+  debug:
+    msg: " OS Registration QA failed "
+  when:
+    - ansible_distribution == "Red Hat Enterprise Linux"
+    - not (osr_verification | bool)
+
+# CentOS default handling
+- name: Set CentOS registration defaults
+  set_fact:
+    osr_out: "Host is not a RHEL environment"
+    osr_verification: "N/A"
+  when: ansible_distribution == "CentOS"
+
+- debug:
+    msg: "{{ osr_out }}"
+  when: ansible_distribution == "CentOS"

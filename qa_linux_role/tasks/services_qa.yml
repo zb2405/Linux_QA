@@ -1,0 +1,6 @@
+- set_fact:
+    monitoring_service: "{{ 'nqmdaemon' if mon_agt == 'nqm' else 'patrolagent' }}"
+- name: Check monitoring service
+  shell: systemctl status {{ monitoring_service }} | grep Active
+  ignore_errors: yes
+  register: result_monitor

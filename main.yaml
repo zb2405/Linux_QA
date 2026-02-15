@@ -1,0 +1,4 @@
+- hosts: all
+  become: yes
+  roles:
+    - qa_linux_role
